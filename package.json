@@ -1,0 +1,19 @@
+{
+  "name": "js101",
+  "version": "1.0.0",
+  "description": "Started March 20th 2023",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jatrice/JS101.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jatrice/JS101/issues"
+  },
+  "homepage": "https://github.com/jatrice/JS101#readme"
+}
