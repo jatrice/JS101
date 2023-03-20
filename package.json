@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/jatrice/JS101/issues"
   },
-  "homepage": "https://github.com/jatrice/JS101#readme"
+  "homepage": "https://github.com/jatrice/JS101#readme",
+  "devDependencies": {
+    "eslint": "^8.36.0"
+  }
 }
