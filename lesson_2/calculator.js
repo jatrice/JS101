@@ -8,7 +8,8 @@ const readline = require('readline-sync');
 const MESSAGES = require('./calculator_messages.json');
 const LANGUAGE = 'en';
 
-function prompt(message, LANGUAGE) {
+function prompt(key) {
+  let message = messages(key, LANGUAGE);
   console.log(`=> ${message}`);
 }
 
