@@ -1,0 +1,22 @@
+{
+  "en": {
+    "greeting": "Welcome to the Calculator!",
+    "firstNumber": "What's the first number?",
+    "errorNumber": "Hmm... that doesn't look like a valid number.",
+    "secondNumber": "What's the second number?",
+    "operation": "What operation would you like to perform?\n 1) Add 2) Subtract 3) Multiply 4) Divide",
+    "errorChoose": "Must choose 1, 2, 3 or 4",
+    "result": "The result is ",
+    "again": "Would you like to do another calculation? (y/n)"
+  },
+  "de": {
+    "greeting": "Willkommen zum Taschenrechner!",
+    "firstNumber": "Wie lautet die erste Nummer?",
+    "errorNumber": "Hmm... das sieht nicht nach einer richtigen Nummer aus.",
+    "secondNumber": "Wie lautet die zweite Nummer?",
+    "operation": "Welche Rechnung möchten Sie durchführen?\n 1) Addition 2) Subtraction 3) Multiplikation 4) Division",
+    "errorChoose": "Sie müssen zwischen 1, 2, 3 oder 4 wählen",
+    "result": "Das Resultat lautet ",
+    "again": "Möchten Sie eine weitere Rechnung durchführen? (y/n)"
+  }
+}
