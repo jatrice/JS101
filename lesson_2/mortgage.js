@@ -11,7 +11,7 @@ function prompt(message) {
   console.log(`=> ${message}`);
 }
 
-function sanitizeAmount(userInput) {
+function sanitizeInput(userInput) {
   return userInput.replaceAll(',', '').replace('$', '').replace('%', '');
 }
 
@@ -25,13 +25,13 @@ function isZero(value) {
   return Number(value) === 0;
 }
 
-function loanAmountValidator(value) {
+function loanInputValidator(value) {
   return isInvalidNumber(value) || isZero(value);
 }
 
 function getInformation(message, userInputValidator = isInvalidNumber) {
   prompt(message);
-  let userInput = sanitizeAmount(readline.question());
+  let userInput = sanitizeInput(readline.question());
 
   while (userInputValidator(userInput)) {
     prompt("Please enter a positive number");
@@ -39,6 +39,19 @@ function getInformation(message, userInputValidator = isInvalidNumber) {
   }
 
   return Number(userInput);
+}
+
+function getMonthlyInterestRate(message) {
+  let interestRate = getInformation(message);
+
+  while (interestRate > 100) {
+    interestRate = getInformation('Please enter a valid value under 100.');
+  }
+
+  const annualInterestRate = Number(interestRate) * 0.01;
+  const monthlyInterestRate = annualInterestRate / 12;
+
+  return monthlyInterestRate;
 }
 
 function calculateMonthlyPayment(
@@ -59,12 +72,8 @@ function calculateMonthlyPayment(
   );
 }
 
-function isInvalidYesNoResponse(answer) {
-  if (answer === 'y' || answer === 'yes' ||  answer === 'n' || answer === 'no') {
-    return false;
-  }
-
-  return true;
+function isValidYesNoResponse(answer) {
+  return (answer === 'y' || answer === 'yes' ||  answer === 'n' || answer === 'no');
 }
 
 function shouldRepeat() {
@@ -72,7 +81,7 @@ function shouldRepeat() {
   let answer = readline.question().toLowerCase();
   console.clear();
 
-  while (isInvalidYesNoResponse(answer)) {
+  while (!isValidYesNoResponse(answer)) {
     prompt("I'm sorry, I did not understand your answer. Please answer with yes or no.");
     answer = readline.question().toLowerCase();
   }
@@ -85,22 +94,13 @@ console.clear();
 prompt("Welcome to the Mortgage & Car Loan Calculator!");
 
 do {
-  const loanAmount = getInformation("Please enter the loan amount", loanAmountValidator);
+  const loanAmount = getInformation("Please enter the loan amount", loanInputValidator);
 
-  let interestRate = getInformation(
-    "Next, please tell me your Annual Percentage Rate (APR) in %:",
-  );
-
-  while (interestRate > 100) {
-    interestRate = getInformation('Please enter a valid value under 100.');
-  }
-
-  const annualInterestRate = Number(interestRate) * 0.01;
-  const monthlyInterestRate = annualInterestRate / 12;
+  const monthlyInterestRate = getMonthlyInterestRate("Next, please tell me your Annual Percentage Rate (APR) in %:");
 
   const loanDuration = getInformation(
     "We're almost ready to calculate your monthly payment.\n   How long is the duration of your loan (in years)?",
-    loanAmountValidator
+    loanInputValidator
   );
 
   const loanDurationInMonths = Number(loanDuration) * 12;
