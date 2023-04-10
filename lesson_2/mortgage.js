@@ -89,6 +89,8 @@ function shouldRepeat() {
   return answer === 'y' || answer === 'yes';
 }
 
+// Start of the interaction
+
 console.clear();
 
 prompt("Welcome to the Mortgage & Car Loan Calculator!");
