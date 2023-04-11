@@ -1,5 +1,14 @@
 const readline = require("readline-sync");
 const VALID_CHOICES = ["rock", "paper", "scissors", "spock", "lizard"];
+const NUMBER_OF_ROUNDS = 5;
+const ROUNDS_TO_WIN = 3;
+const WINNING_COMBINATIONS = {
+  rock: ['lizard', 'scissors'],
+  paper: ['rock', 'spock'],
+  scissors: ['paper', 'lizard'],
+  lizard: ['spock', 'paper'],
+  spock: ['scissors', 'rock']
+};
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -23,7 +32,9 @@ function parseShortCut(input) {
 }
 
 function sanitizeInput(input) {
-  return parseShortCut(input.replaceAll(" ", "").replace(".", "").toLowerCase());
+  return parseShortCut(
+    input.replaceAll(" ", "").replace(".", "").toLowerCase()
+  );
 }
 function isInvalidInput(input) {
   return !VALID_CHOICES.includes(input) || input.trim() === "";
@@ -41,36 +52,39 @@ function getUserChoice(message) {
   return choice;
 }
 
+function getComputerChoice() {
+  let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
+  return VALID_CHOICES[randomIndex];
+}
+
 function didUserWin(choice, computerChoice) {
-  return ((choice === "rock" && (computerChoice === "lizard" || computerChoice === "scissors")) ||
-    (choice === "paper" && (computerChoice === "rock" || computerChoice === "spock")) ||
-    (choice === "scissors" && (computerChoice === "paper" || computerChoice === "lizard")) ||
-    (choice === "lizard" && (computerChoice === "spock" || computerChoice === "paper")) ||
-    (choice === "spock" && (computerChoice === "scissors" || computerChoice === "rock")));
+  return WINNING_COMBINATIONS[choice].includes(computerChoice);
 }
 
 function displayWinner(choice, computerChoice, scores) {
   if (choice === computerChoice) {
-    prompt(`Since you both picked ${choice}, it's a tie!`);
+    prompt(`Since you both picked ${choice}, it's a tie!\n`);
     return;
   }
   if (didUserWin(choice, computerChoice)) {
-    prompt("You win!");
+    prompt("You win!\n");
     scores.userScore += 1;
 
     return;
   }
 
-  prompt("The computer wins this round!");
+  prompt("The computer wins this round!\n");
   scores.computerScore += 1;
 }
 
 function isValidYesNoResponse(answer) {
-  return answer === "y" || answer === "yes" || answer === "n" || answer === "no";
+  return (
+    answer === "y" || answer === "yes" || answer === "n" || answer === "no"
+  );
 }
 
 function playAgain() {
-  prompt("Would you like to play again?");
+  prompt("Would you like to play again? (y/n)");
   let answer = sanitizeInput(readline.question());
   console.clear();
 
@@ -84,34 +98,44 @@ function playAgain() {
 
 function oneRound(scores) {
   let choice = getUserChoice(`Choose one: ${VALID_CHOICES.join(", ")}`);
-
-  let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
-  let computerChoice = VALID_CHOICES[randomIndex];
+  let computerChoice = getComputerChoice();
 
   prompt(`You chose ${choice}. The computer chose ${computerChoice}.`);
 
   displayWinner(choice, computerChoice, scores);
 }
 
+function shouldGameContinue(gameCount, scores) {
+  return gameCount < NUMBER_OF_ROUNDS &&
+    scores.userScore < ROUNDS_TO_WIN &&
+    scores.computerScore < ROUNDS_TO_WIN;
+}
+
 function promptToContinue(gameCount, scores) {
-  if (gameCount <= 5 && scores.userScore < 3 && scores.computerScore < 3) {
+  if (shouldGameContinue(gameCount, scores)) {
     prompt("Hit a key to continue.");
     readline.question();
     console.clear();
   }
 }
 
+function displayCurrentScore(scores) {
+  prompt(
+    `The current score is: ${scores.userScore} for you, ${scores.computerScore} for the computer.\n`
+  );
+}
+
 function playGame(scores) {
   let gameCount = 0;
   do {
     oneRound(scores);
-    prompt(`The current score is: ${scores.userScore} for you, ${scores.computerScore} for the computer.`);
+    displayCurrentScore(scores);
     gameCount += 1;
     promptToContinue(gameCount, scores);
-  } while (gameCount <= 5 && scores.userScore < 3 && scores.computerScore < 3);
+  } while (shouldGameContinue(gameCount, scores));
 }
 
-function finalWinner(scores) {
+function reportGameOutcome(scores) {
   if (scores.userScore > scores.computerScore) {
     prompt("Congratulations! You win the game!");
     return;
@@ -135,7 +159,7 @@ prompt(
 do {
   const scores = { userScore: 0, computerScore: 0 };
   playGame(scores);
-  finalWinner(scores);
+  reportGameOutcome(scores);
 } while (playAgain());
 
 console.clear();
