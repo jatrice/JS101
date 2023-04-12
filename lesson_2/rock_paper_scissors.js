@@ -64,17 +64,15 @@ function didUserWin(choice, computerChoice) {
 function displayWinner(choice, computerChoice, scores) {
   if (choice === computerChoice) {
     prompt(`Since you both picked ${choice}, it's a tie!\n`);
-    return;
+    return {userScore: scores.userScore, computerScore: scores.computerScore};
   }
   if (didUserWin(choice, computerChoice)) {
     prompt("You win!\n");
-    scores.userScore += 1;
-
-    return;
+    return {userScore: scores.userScore + 1, computerScore: scores.computerScore};
   }
 
   prompt("The computer wins this round!\n");
-  scores.computerScore += 1;
+  return {userScore: scores.userScore, computerScore: scores.computerScore + 1};
 }
 
 function isValidYesNoResponse(answer) {
@@ -102,7 +100,7 @@ function oneRound(scores) {
 
   prompt(`You chose ${choice}. The computer chose ${computerChoice}.`);
 
-  displayWinner(choice, computerChoice, scores);
+  return displayWinner(choice, computerChoice, scores);
 }
 
 function shouldGameContinue(gameCount, scores) {
@@ -125,14 +123,19 @@ function displayCurrentScore(scores) {
   );
 }
 
-function playGame(scores) {
+function playGame() {
   let gameCount = 0;
-  do {
-    oneRound(scores);
-    displayCurrentScore(scores);
+  const initialScores = { userScore: 0, computerScore: 0 };
+  let updatedScores = initialScores;
+  while (true) {
+    updatedScores = oneRound(updatedScores);
+    displayCurrentScore(updatedScores);
     gameCount += 1;
-    promptToContinue(gameCount, scores);
-  } while (shouldGameContinue(gameCount, scores));
+    promptToContinue(gameCount, updatedScores);
+    if (!shouldGameContinue(gameCount, updatedScores)) {
+      return updatedScores;
+    }
+  }
 }
 
 function reportGameOutcome(scores) {
@@ -156,10 +159,10 @@ prompt(
   "The rules are simple, whoever wins the most out of 5 rounds, wins the game!"
 );
 
-do {
-  const scores = { userScore: 0, computerScore: 0 };
-  playGame(scores);
-  reportGameOutcome(scores);
-} while (playAgain());
+while (true) {
+  const updatedScores = playGame();
+  reportGameOutcome(updatedScores);
+  if (!playAgain()) break;
+}
 
 console.clear();
