@@ -3,11 +3,11 @@ const VALID_CHOICES = ["rock", "paper", "scissors", "spock", "lizard"];
 const NUMBER_OF_ROUNDS = 5;
 const ROUNDS_TO_WIN = 3;
 const WINNING_COMBINATIONS = {
-  rock: ['lizard', 'scissors'],
-  paper: ['rock', 'spock'],
-  scissors: ['paper', 'lizard'],
-  lizard: ['spock', 'paper'],
-  spock: ['scissors', 'rock']
+  rock: ["lizard", "scissors"],
+  paper: ["rock", "spock"],
+  scissors: ["paper", "lizard"],
+  lizard: ["spock", "paper"],
+  spock: ["scissors", "rock"],
 };
 
 function prompt(message) {
@@ -61,18 +61,45 @@ function didUserWin(choice, computerChoice) {
   return WINNING_COMBINATIONS[choice].includes(computerChoice);
 }
 
-function displayWinner(choice, computerChoice, scores) {
+function determineWinner(choice, computerChoice) {
   if (choice === computerChoice) {
-    prompt(`Since you both picked ${choice}, it's a tie!\n`);
-    return {userScore: scores.userScore, computerScore: scores.computerScore};
+    return "tie";
   }
   if (didUserWin(choice, computerChoice)) {
+    return "userWins";
+  }
+
+  return "computerWins";
+}
+
+function displayWinner(result, choice) {
+  if (result === "tie") {
+    prompt(`Since you both picked ${choice}, it's a tie!\n`);
+    return;
+  }
+  if (result === "userWins") {
     prompt("You win!\n");
-    return {userScore: scores.userScore + 1, computerScore: scores.computerScore};
+    return;
   }
 
   prompt("The computer wins this round!\n");
-  return {userScore: scores.userScore, computerScore: scores.computerScore + 1};
+}
+
+function updateScores(result, scores) {
+  if (result === "tie") {
+    return { userScore: scores.userScore, computerScore: scores.computerScore };
+  }
+  if (result === "userWins") {
+    return {
+      userScore: scores.userScore + 1,
+      computerScore: scores.computerScore,
+    };
+  }
+
+  return {
+    userScore: scores.userScore,
+    computerScore: scores.computerScore + 1,
+  };
 }
 
 function isValidYesNoResponse(answer) {
@@ -100,13 +127,17 @@ function oneRound(scores) {
 
   prompt(`You chose ${choice}. The computer chose ${computerChoice}.`);
 
-  return displayWinner(choice, computerChoice, scores);
+  const result = determineWinner(choice, computerChoice);
+  displayWinner(result, choice);
+  return updateScores(result, scores);
 }
 
 function shouldGameContinue(gameCount, scores) {
-  return gameCount < NUMBER_OF_ROUNDS &&
+  return (
+    gameCount < NUMBER_OF_ROUNDS &&
     scores.userScore < ROUNDS_TO_WIN &&
-    scores.computerScore < ROUNDS_TO_WIN;
+    scores.computerScore < ROUNDS_TO_WIN
+  );
 }
 
 function promptToContinue(gameCount, scores) {
